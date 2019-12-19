@@ -30,7 +30,7 @@ describe('webdriver request', () => {
 
     describe('createOptions', () => {
         it('fails if command requires sessionId but none given', () => {
-            const req = new WebDriverRequest('POST', '/wd/hub/session/:sessionId/element')
+            const req = new WebDriverRequest('POST', '/session/:sessionId/element')
             expect(() => req._createOptions({})).toThrow()
         })
 
@@ -40,13 +40,13 @@ describe('webdriver request', () => {
                 protocol: 'https',
                 hostname: 'localhost',
                 port: 4445,
-                path: '/wd/hub/',
+                path: '/',
                 headers: { foo: 'bar' }
             }, 'foobar12345')
 
             expect(options.agent.protocol).toBe('https:')
             expect(options.uri.href)
-                .toBe('https://localhost:4445/wd/hub/session/foobar12345/element')
+                .toBe('https://localhost:4445/session/foobar12345/element')
             expect(Object.keys(options.headers))
                 .toEqual(['Connection', 'Accept', 'User-Agent', 'foo'])
         })
@@ -58,7 +58,7 @@ describe('webdriver request', () => {
                 protocol: 'https',
                 hostname: 'localhost',
                 port: 4445,
-                path: '/wd/hub/',
+                path: '/',
                 agent
             }, 'foobar12345')
 
@@ -72,7 +72,7 @@ describe('webdriver request', () => {
                 protocol: 'https',
                 hostname: 'localhost',
                 port: 4445,
-                path: '/wd/hub/'
+                path: '/'
             }, 'foobar12345')
             expect(options.uri.href).toBe('https://localhost:4445/grid/api/hub')
         })
@@ -191,7 +191,7 @@ describe('webdriver request', () => {
             const req = new WebDriverRequest('POST', '/session')
             req.emit = jest.fn()
 
-            const opts = Object.assign(req.defaultOptions, { uri: { path: '/wd/hub/session/foobar-123/element' } })
+            const opts = Object.assign(req.defaultOptions, { uri: { path: '/session/foobar-123/element' } })
             const res = await req._request(opts)
 
             expect(res).toEqual(expectedResponse)
@@ -203,7 +203,7 @@ describe('webdriver request', () => {
             req.emit = jest.fn()
 
             const opts = Object.assign(req.defaultOptions, {
-                uri: { path: '/wd/hub/session/foobar-123/element/some-sub-sub-elem-231/click' }, body: { foo: 'bar' } })
+                uri: { path: '/session/foobar-123/element/some-sub-sub-elem-231/click' }, body: { foo: 'bar' } })
 
             let error
             try {
@@ -226,7 +226,7 @@ describe('webdriver request', () => {
             const req = new WebDriverRequest('POST', '/session')
             req.emit = jest.fn()
 
-            const opts = Object.assign(req.defaultOptions, { uri: { path: '/wd/hub/empty' } })
+            const opts = Object.assign(req.defaultOptions, { uri: { path: '/empty' } })
             await expect(req._request(opts)).rejects.toEqual(new Error('Response has empty body'))
             expect(req.emit.mock.calls).toHaveLength(1)
             expect(warn.mock.calls).toHaveLength(0)
@@ -241,7 +241,7 @@ describe('webdriver request', () => {
             const req = new WebDriverRequest('POST', '/session')
             req.emit = jest.fn()
 
-            const opts = Object.assign(req.defaultOptions, { uri: { path: '/wd/hub/failing' } })
+            const opts = Object.assign(req.defaultOptions, { uri: { path: '/failing' } })
             await expect(req._request(opts, 2)).rejects.toEqual(new Error('Could not send request'))
             expect(req.emit.mock.calls).toHaveLength(3)
             expect(warn.mock.calls).toHaveLength(2)
@@ -257,7 +257,7 @@ describe('webdriver request', () => {
             req.emit = jest.fn()
 
             request.mockClear()
-            const opts = Object.assign(req.defaultOptions, { uri: { path: '/wd/hub/failing' }, body: { foo: 'bar' } })
+            const opts = Object.assign(req.defaultOptions, { uri: { path: '/failing' }, body: { foo: 'bar' } })
             expect(await req._request(opts, 3)).toEqual({ value: 'caught' })
             expect(req.emit.mock.calls).toHaveLength(4)
             expect(logger().warn.mock.calls).toHaveLength(3)
@@ -271,7 +271,7 @@ describe('webdriver request', () => {
                 protocol: 'https',
                 hostname: 'localhost',
                 port: 4445,
-                path: '/wd/hub/'
+                path: '/'
             }, 'foobar')).toEqual({ value: { some: 'config' } })
         })
 
@@ -282,7 +282,7 @@ describe('webdriver request', () => {
                 protocol: 'https',
                 hostname: 'localhost',
                 port: 4445,
-                path: '/wd/hub/'
+                path: '/'
             }, 'foobar').then(
                 (res) => res,
                 (e) => e
